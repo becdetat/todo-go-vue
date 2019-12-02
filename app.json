@@ -1,12 +1,8 @@
 {
-  "name": "Start on Heroku: Go",
-  "description": "Go Getting Started Example App",
+  "name": "Todo: Go and Vue.js",
+  "description": "Todo app created with Go and Vue.js",
   "keywords": [
-    "getting-started",
-    "go",
-    "sample",
-    "example"
   ],
-  "website": "http://github.com/heroku/go-getting-started",
-  "repository": "http://github.com/heroku/go-getting-started"
+  "website": "https://thawing-bayou-17829.herokuapp.com/",
+  "repository": "https://github.com/becdetat/todo-go-vue"
 }
