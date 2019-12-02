@@ -39,7 +39,6 @@ func main() {
 		log.Fatal("$PORT must be set")
 	}
 
-
   db, err := sql.Open( "postgres", os.Getenv( "DATABASE_URL" ) )
   if err != nil {
     log.Fatalf( "Error opening database: %q", err )
@@ -62,5 +61,16 @@ func main() {
 
 	router.GET("/db", dbFunc(db))
 
+	router.GET( "/todos", func( c *gin.Context ) {
+		todos, err := GetTodos( db )
+		if err != nil {
+			c.String( http.StatusInternalServerError,
+				fmt.Sprintf( "Error getting todos", err ) )
+			return
+		}
+		c.JSON( http.StatusOK, todos )
+	} )
+
 	router.Run(":" + port)
 }
+
