@@ -1,4 +1,3 @@
-
 # Todo: Go and Vue.js
 
 A todo app built using Go and Vue.js.

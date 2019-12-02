@@ -16,18 +16,8 @@ import (
 
 func dbFunc(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if _, err := db.Exec("INSERT INTO ticks VALUES (now())"); err != nil {
-			c.String(http.StatusInternalServerError,
-				fmt.Sprintf("Error incrementing tick: %q", err))
-			return
-		}
-
-		rows, err := db.Query("SELECT tick FROM ticks")
-		if err != nil {
-			c.String(http.StatusInternalServerError,
-				fmt.Sprintf("Error reading ticks: %q", err))
-			return
-		}
+		ExecuteStatement( db, "INSERT INTO ticks VALUES (now())" )
+		rows := ExecuteQuery( db, "SELECT tick FROM ticks" )
 
 		defer rows.Close()
 		for rows.Next() {
