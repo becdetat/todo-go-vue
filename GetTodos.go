@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"net/http"
 )
 
 type Todo struct {
@@ -23,7 +22,7 @@ func GetTodos( db *sql.DB ) ( []*Todo, error ) {
 	todos := []*Todo {}
 
 	for rows.Next() {
-		todo := *Todo {}
+		todo := &Todo {}
 
 		if err := rows.Scan( &todo.Id, &todo.Title, &todo.Position, &todo.Complete ); err != nil {
 			return nil, err
