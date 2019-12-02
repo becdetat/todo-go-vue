@@ -16,12 +16,6 @@ import (
 
 func dbFunc(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if _, err := db.Exec("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)"); err != nil {
-			c.String(http.StatusInternalServerError,
-				fmt.Sprintf("Error creating database table: %q", err))
-			return
-		}
-
 		if _, err := db.Exec("INSERT INTO ticks VALUES (now())"); err != nil {
 			c.String(http.StatusInternalServerError,
 				fmt.Sprintf("Error incrementing tick: %q", err))
@@ -61,6 +55,7 @@ func main() {
     log.Fatalf( "Error opening database: %q", err )
   }
 
+  MigrateDatabase( db )
 
 	router := gin.New()
 	router.Use(gin.Logger())
