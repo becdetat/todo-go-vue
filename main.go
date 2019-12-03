@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -31,10 +30,6 @@ func main() {
 	router.Static("/static", "static")
 
 	router.Static( "/", "dist" )
-
-	// router.GET("/", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "index.tmpl.html", nil)
-	// })
 
 	router.GET( "/todos", func( c *gin.Context ) {
 		HandleGetTodos( db, c )
