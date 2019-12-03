@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,29 +10,6 @@ import (
 	_ "github.com/heroku/x/hmetrics/onload"
 	_ "github.com/lib/pq"
 )
-
-func handleGetTodos( db *sql.DB, c *gin.Context ) {
-	todos, err := GetTodos( db )
-	if err != nil {
-		c.String( http.StatusInternalServerError,
-			fmt.Sprintf( "Error getting todos: %q", err ) )
-		return
-	}
-	c.JSON( http.StatusOK, todos )
-}
-
-func handlePostTodos( db *sql.DB, c *gin.Context ) {
-	var todo Todo
-	c.BindJSON( &todo )
-	err := AddTodo( db, &todo )
-	if err != nil {
-		c.String( http.StatusInternalServerError,
-			fmt.Sprintf( "Error adding todo: %q", err ) )
-		return
-	}
-
-	c.String( http.StatusOK, "Success" )
-}
 
 func main() {
 	port := os.Getenv("PORT")
@@ -59,10 +35,13 @@ func main() {
 	})
 
 	router.GET( "/todos", func( c *gin.Context ) {
-		handleGetTodos( db, c )
+		HandleGetTodos( db, c )
 	} )
 	router.POST( "/todos", func( c *gin.Context ) {
-		handlePostTodos( db, c )
+		HandlePostTodo( db, c )
+	} )
+	router.PUT( "/todos/:id", func( c *gin.Context ) {
+		HandlePutTodo( db, c )
 	} )
 
 	router.Run(":" + port)
