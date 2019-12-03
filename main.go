@@ -6,40 +6,34 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
 	_ "github.com/lib/pq"
-  "github.com/russross/blackfriday"
 )
 
-func dbFunc(db *sql.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		if _, err := db.Exec( "INSERT INTO ticks VALUES (now())" ); err != nil {
-			c.String( http.StatusInternalServerError,
-				fmt.Sprintf( "Error adding tick: %q", err ) )
-			return
-		}
-		rows, err := db.Query( "SELECT tick FROM ticks" )
-		if err != nil {
-			c.String( http.StatusInternalServerError,
-				fmt.Sprintf( "Error getting ticks: %q", err ) )
-			return
-		}
-
-		defer rows.Close()
-		for rows.Next() {
-			var tick time.Time
-			if err := rows.Scan(&tick); err != nil {
-				c.String(http.StatusInternalServerError,
-					fmt.Sprintf("Error scanning ticks: %q", err))
-				return
-			}
-			c.String(http.StatusOK, fmt.Sprintf("Read from DB: %s\n", tick.String()))
-			}
-		}
+func handleGetTodos( db *sql.DB, c *gin.Context ) {
+	todos, err := GetTodos( db )
+	if err != nil {
+		c.String( http.StatusInternalServerError,
+			fmt.Sprintf( "Error getting todos: %q", err ) )
+		return
 	}
+	c.JSON( http.StatusOK, todos )
+}
+
+func handlePostTodos( db *sql.DB, c *gin.Context ) {
+	var todo Todo
+	c.BindJSON( &todo )
+	err := AddTodo( db, &todo )
+	if err != nil {
+		c.String( http.StatusInternalServerError,
+			fmt.Sprintf( "Error adding todo: %q", err ) )
+		return
+	}
+
+	c.String( http.StatusOK, "Success" )
+}
 
 func main() {
 	port := os.Getenv("PORT")
@@ -64,20 +58,11 @@ func main() {
 		c.HTML(http.StatusOK, "index.tmpl.html", nil)
 	})
 
-	router.GET( "/mark", func( c *gin.Context ) {
-		c.String( http.StatusOK, string( blackfriday.Run( []byte( "**hi!**" ) ) ) )
-	} )
-
-	router.GET("/db", dbFunc(db))
-
 	router.GET( "/todos", func( c *gin.Context ) {
-		todos, err := GetTodos( db )
-		if err != nil {
-			c.String( http.StatusInternalServerError,
-				fmt.Sprintf( "Error getting todos", err ) )
-			return
-		}
-		c.JSON( http.StatusOK, todos )
+		handleGetTodos( db, c )
+	} )
+	router.POST( "/todos", func( c *gin.Context ) {
+		handlePostTodos( db, c )
 	} )
 
 	router.Run(":" + port)
