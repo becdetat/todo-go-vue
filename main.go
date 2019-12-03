@@ -3,9 +3,11 @@ package main
 import (
 	"database/sql"
 	"log"
+	// "net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/static"
 	_ "github.com/heroku/x/hmetrics/onload"
 	_ "github.com/lib/pq"
 )
@@ -26,10 +28,18 @@ func main() {
 
 	router := gin.New()
 	router.Use(gin.Logger())
-	router.LoadHTMLGlob("templates/*.tmpl.html")
-	router.Static("/static", "static")
 
-	router.Static( "/", "dist" )
+	router.Use( static.Serve( "/", static.LocalFile( "/dist/index.html", false ) ) )
+
+	// router.LoadHTMLGlob("templates/*.tmpl.html")
+	//router.LoadHTMLGlob( "dist/*.html" )
+	// router.Static("/static", "static")
+
+	//router.Static( "/dist", "dist" )
+
+	// router.GET("/", func(c *gin.Context) {
+	// 	c.HTML(http.StatusOK, "index.tmpl.html", nil)
+	// })
 
 	router.GET( "/todos", func( c *gin.Context ) {
 		HandleGetTodos( db, c )
