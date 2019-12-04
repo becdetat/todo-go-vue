@@ -32,8 +32,8 @@ func main() {
 	router.Use( cors.New( cors.Config {
 		AllowOrigins: []string {
 			"https://thawing-bayou-17829.herokuapp.com",
-			"http://localhost:8080"
-		}
+			"http://localhost:8080",
+		},
 	} ) )
 
 	router.Use( static.Serve( "/", static.LocalFile( "dist", true ) ) )
