@@ -2,10 +2,10 @@
   <div>
     <md-list>
       <md-list-item v-for="item in items" v-bind:key="item.id">
-        <span v-if="item.complete">☑</span>
-        <span v-if="!item.complete">⍻</span>
+        <md-checkbox v-model="item.complete" v-on:change="updateTodo( item )"></md-checkbox>
         <span class="md-list-item-text">
-          {{item.title}}
+          <span v-if="!item.complete">{{item.title}}</span>
+          <strike v-if="item.complete">{{item.title}}</strike>
         </span>
       </md-list-item>
     </md-list>
@@ -21,7 +21,7 @@ export default {
   name: 'TodoList',
   data: () => ( {
     items: [],
-    error: false
+    error: null
   } ),
   mounted() {
     axios
@@ -32,6 +32,15 @@ export default {
       .catch( error => {
         this.error = error
       } )
+  },
+  methods: {
+    updateTodo: ( todo ) => {
+      axios
+        .put(`https://thawing-bayou-17829.herokuapp.com/todos/${todo.id}`, todo)
+        .catch( error => {
+          this.error = error
+        } )
+    }
   }
 }
 </script>
