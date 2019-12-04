@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/static"
 	_ "github.com/heroku/x/hmetrics/onload"
@@ -27,6 +28,13 @@ func main() {
 
 	router := gin.New()
 	router.Use(gin.Logger())
+
+	router.Use( cors.New( cors.Config {
+		AllowOrigins: []string {
+			"https://thawing-bayou-17829.herokuapp.com",
+			"http://localhost:8080"
+		}
+	} ) )
 
 	router.Use( static.Serve( "/", static.LocalFile( "dist", true ) ) )
 
