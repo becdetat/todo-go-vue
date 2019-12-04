@@ -29,12 +29,12 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Logger())
 
-	router.Use( cors.New( cors.Config {
-		AllowOrigins: []string {
-			"http://thawing-bayou-17829.herokuapp.com",
-			"http://localhost:8080",
-		},
-	} ) )
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowOrigins = []string {
+		"http://thawing-bayou-17829.herokuapp.com",
+		"http://localhost:8080",
+	}
+	router.Use( cors.New( corsConfig ) )
 
 	router.Use( static.Serve( "/", static.LocalFile( "dist", true ) ) )
 
