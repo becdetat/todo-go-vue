@@ -1,5 +1,4 @@
 .env
 .docker_build/
 bin/
-/dist/
 /node_modules/
