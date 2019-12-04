@@ -29,7 +29,8 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Logger())
 
-	router.Use( static.Serve( "/", static.LocalFile( "dist/index.html", false ) ) )
+	//router.Use( static.Serve( "/", static.LocalFile( "dist/index.html", false ) ) )
+	router.Use( static.Serve( "/dist", static.LocalFile( "/dist", false ) ) )
 
 	// router.LoadHTMLGlob("templates/*.tmpl.html")
 	//router.LoadHTMLGlob( "dist/*.html" )
