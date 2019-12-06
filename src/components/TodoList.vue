@@ -10,7 +10,8 @@
           <input type="checkbox"
                  v-model="item.complete"
                  v-on:change="updateTodo( item )"/>
-          <span v-if="!item.editing">
+          <span v-if="!item.editing"
+                class="itemTitle">
             <span v-if="!item.complete">{{item.title}}</span>
             <strike v-if="item.complete">{{item.title}}</strike>
           </span>
@@ -22,8 +23,11 @@
                   v-on:click="deleteTodo( item )">
             Delete
           </button>
-          <div v-if="!!item.editing">
-            <input type="text" v-model="item.editedTitle"/>
+          <div v-if="!!item.editing"
+               class="editTools">
+            <input type="text"
+                   v-model="item.editedTitle"
+                   class="editedTitle"/>
             <button v-on:click="saveEditTodo( item )">Save</button>
             <button v-on:click="cancelEditTodo( item )">Cancel</button>
           </div>
@@ -144,4 +148,14 @@ export default {
 </script>
 
 <style scoped>
+  .itemTitle {
+    display: inline-block;
+    width: 150px;
+  }
+  .editedTitle {
+    width: 145px;
+  }
+  .editTools {
+    display: inline;
+  }
 </style>
