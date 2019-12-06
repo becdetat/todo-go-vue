@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/static"
 	_ "github.com/heroku/x/hmetrics/onload"
@@ -28,9 +27,6 @@ func main() {
 
 	router := gin.New()
 	router.Use(gin.Logger())
-
-	corsConfig := cors.DefaultConfig()
-	router.Use( cors.New( corsConfig ) )
 
 	router.Use( static.Serve( "/", static.LocalFile( "dist", true ) ) )
 
