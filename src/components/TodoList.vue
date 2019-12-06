@@ -12,6 +12,10 @@
               v-on:click="startEditTodo( item )">
         Edit
       </button>
+      <button v-if="!item.editing"
+              v-on:click="deleteTodo( item )">
+        Delete
+      </button>
       <div v-if="!!item.editing">
         <input type="text" v-model="item.editedTitle"/>
         <button v-on:click="saveEditTodo( item )">Save</button>
@@ -25,7 +29,6 @@
       </label>
       <button v-on:click="createNewTodo()">Create</button>
     </li>
-    {{items}}
   </ul>
 </template>
 
@@ -81,9 +84,9 @@ export default {
     },
     createNewTodo() {
       const todo = {
-        id: Math.max( ...this.items.map( x => x.id ) ) + 1,
+        id: Math.max( ...this.items.map( x => x.id ), -1 ) + 1,
         title: this.newItemTitle,
-        position: Math.max( ...this.items.map( x => x.position ) ) + 1,
+        position: Math.max( ...this.items.map( x => x.position ), -1 ) + 1,
         complete: false
       }
 
@@ -93,6 +96,14 @@ export default {
       axios
         .post( 'https://thawing-bayou-17829.herokuapp.com/todos', todo )
         .catch ( error => {
+          this.error = error
+        } )
+    },
+    deleteTodo( todo ) {
+      this.items = this.items.filter( x => x.id !== todo.id )
+      axios
+        .delete(`https://thawing-bayou-17829.herokuapp.com/todos/${todo.id}`)
+        .catch( error => {
           this.error = error
         } )
     }
