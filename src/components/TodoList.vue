@@ -10,7 +10,8 @@
           <input type="checkbox"
                  v-model="item.complete"
                  v-on:change="updateTodo( item )"/>
-          <span v-if="!item.editing">
+          <span v-if="!item.editing"
+                class="itemTitle">
             <span v-if="!item.complete">{{item.title}}</span>
             <strike v-if="item.complete">{{item.title}}</strike>
           </span>
@@ -22,8 +23,11 @@
                   v-on:click="deleteTodo( item )">
             Delete
           </button>
-          <div v-if="!!item.editing">
-            <input type="text" v-model="item.editedTitle"/>
+          <div v-if="!!item.editing"
+               class="editTools">
+            <input type="text"
+                   v-model="item.editedTitle"
+                   class="editedTitle"/>
             <button v-on:click="saveEditTodo( item )">Save</button>
             <button v-on:click="cancelEditTodo( item )">Cancel</button>
           </div>
@@ -47,7 +51,7 @@ import _ from 'lodash'
 
 function putTodo(todo) {
   return axios
-    .put(`https://thawing-bayou-17829.herokuapp.com/todos/${todo.id}`, todo)
+    .put(`/api/v1/todos/${todo.id}`, todo)
 }
 
 export default {
@@ -62,7 +66,7 @@ export default {
   },
   mounted() {
     axios
-      .get('https://thawing-bayou-17829.herokuapp.com/todos')
+      .get('/api/v1/todos')
       .then( response => {
         this.items = _.orderBy(response.data, x => x.position).map( x => ( {
             ...x,
@@ -108,7 +112,7 @@ export default {
       this.newItemTitle = ''
 
       axios
-        .post( 'https://thawing-bayou-17829.herokuapp.com/todos', todo )
+        .post( '/api/v1/todos', todo )
         .catch ( error => {
           this.error = error
         } )
@@ -116,7 +120,7 @@ export default {
     deleteTodo( todo ) {
       this.items = this.items.filter( x => x.id !== todo.id )
       axios
-        .delete(`https://thawing-bayou-17829.herokuapp.com/todos/${todo.id}`)
+        .delete(`/api/v1/todos/${todo.id}`)
         .catch( error => {
           this.error = error
         } )
@@ -144,4 +148,14 @@ export default {
 </script>
 
 <style scoped>
+  .itemTitle {
+    display: inline-block;
+    width: 150px;
+  }
+  .editedTitle {
+    width: 145px;
+  }
+  .editTools {
+    display: inline;
+  }
 </style>

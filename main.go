@@ -30,24 +30,20 @@ func main() {
 	router.Use(gin.Logger())
 
 	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowOrigins = []string {
-		"http://thawing-bayou-17829.herokuapp.com",
-		"http://localhost:8080",
-	}
 	router.Use( cors.New( corsConfig ) )
 
 	router.Use( static.Serve( "/", static.LocalFile( "dist", true ) ) )
 
-	router.GET( "/todos", func( c *gin.Context ) {
+	router.GET( "/api/v1/todos", func( c *gin.Context ) {
 		HandleGetTodos( db, c )
 	} )
-	router.POST( "/todos", func( c *gin.Context ) {
+	router.POST( "/api/v1/todos", func( c *gin.Context ) {
 		HandlePostTodo( db, c )
 	} )
-	router.PUT( "/todos/:id", func( c *gin.Context ) {
+	router.PUT( "/api/v1/todos/:id", func( c *gin.Context ) {
 		HandlePutTodo( db, c )
 	} )
-	router.DELETE( "/todos/:id", func( c *gin.Context ) {
+	router.DELETE( "/api/v1/todos/:id", func( c *gin.Context ) {
 		HandleDeleteTodo( db, c )
 	} )
 
