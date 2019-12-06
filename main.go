@@ -47,6 +47,9 @@ func main() {
 	router.PUT( "/todos/:id", func( c *gin.Context ) {
 		HandlePutTodo( db, c )
 	} )
+	router.DELETE( "/todos/:id", func( c *gin.Context ) {
+		HandleDeleteTodo( db, c )
+	} )
 
 	router.Run(":" + port)
 }
