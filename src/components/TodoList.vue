@@ -1,41 +1,54 @@
 <template>
-  <ul>
-    <li v-for="item in items" v-bind:key="item.id">
-      <input type="checkbox"
-             v-model="item.complete"
-             v-on:change="updateTodo( item )"/>
-      <span v-if="!item.editing">
-        <span v-if="!item.complete">{{item.title}}</span>
-        <strike v-if="item.complete">{{item.title}}</strike>
-      </span>
-      <button v-if="!item.editing"
-              v-on:click="startEditTodo( item )">
-        Edit
-      </button>
-      <button v-if="!item.editing"
-              v-on:click="deleteTodo( item )">
-        Delete
-      </button>
-      <div v-if="!!item.editing">
-        <input type="text" v-model="item.editedTitle"/>
-        <button v-on:click="saveEditTodo( item )">Save</button>
-        <button v-on:click="cancelEditTodo( item )">Cancel</button>
-      </div>
-    </li>
-    <li>
+  <div>
+    <ol>
+      <draggable v-model="items"
+               draggable=".item"
+               :move="onMove">
+        <li v-for="item in items"
+             v-bind:key="item.id"
+             class="item">
+          <input type="checkbox"
+                 v-model="item.complete"
+                 v-on:change="updateTodo( item )"/>
+          <span v-if="!item.editing">
+            <span v-if="!item.complete">{{item.title}}</span>
+            <strike v-if="item.complete">{{item.title}}</strike>
+          </span>
+          <button v-if="!item.editing"
+                  v-on:click="startEditTodo( item )">
+            Edit
+          </button>
+          <button v-if="!item.editing"
+                  v-on:click="deleteTodo( item )">
+            Delete
+          </button>
+          <div v-if="!!item.editing">
+            <input type="text" v-model="item.editedTitle"/>
+            <button v-on:click="saveEditTodo( item )">Save</button>
+            <button v-on:click="cancelEditTodo( item )">Cancel</button>
+          </div>
+        </li>
+      </draggable>
+    </ol>
+    <div slot="footer">
       <label>
         Add a new item:
         <input type="text" v-model="newItemTitle"/>
       </label>
       <button v-on:click="createNewTodo()">Create</button>
-    </li>
-  </ul>
+    </div>
+  </div>
 </template>
 
 <script>
-// import draggable from 'vuedraggable'
+import draggable from 'vuedraggable'
 import axios from 'axios'
 import _ from 'lodash'
+
+function putTodo(todo) {
+  return axios
+    .put(`https://thawing-bayou-17829.herokuapp.com/todos/${todo.id}`, todo)
+}
 
 export default {
   name: 'TodoList',
@@ -44,6 +57,9 @@ export default {
     error: null,
     newItemTitle: ''
   } ),
+  components: {
+    draggable
+  },
   mounted() {
     axios
       .get('https://thawing-bayou-17829.herokuapp.com/todos')
@@ -60,8 +76,7 @@ export default {
   },
   methods: {
     updateTodo: ( todo ) => {
-      axios
-        .put(`https://thawing-bayou-17829.herokuapp.com/todos/${todo.id}`, todo)
+      putTodo( todo )
         .catch( error => {
           this.error = error
         } )
@@ -73,8 +88,7 @@ export default {
     saveEditTodo: ( todo ) => {
       todo.editing = false
       todo.title = todo.editedTitle
-      axios
-        .put(`https://thawing-bayou-17829.herokuapp.com/todos/${todo.id}`, todo)
+      putTodo( todo )
         .catch( error => {
           this.error = error
         } )
@@ -106,17 +120,28 @@ export default {
         .catch( error => {
           this.error = error
         } )
+    },
+    onMove(evt) {
+      const index = evt.draggedContext.index
+      const futureIndex = evt.draggedContext.futureIndex
+      const item = this.items[index]
+      const futureItem = this.items[futureIndex]
+      const futurePosition = futureItem.position
+      futureItem.position = item.position
+      item.position = futurePosition
+
+      putTodo( item )
+        .catch( error => {
+          this.error = error
+        } )
+      putTodo( futureItem )
+        .catch( error => {
+          this.error = error
+        } )
     }
   }
 }
 </script>
 
 <style scoped>
-  ul {
-    list-style: none;
-    padding: 0;
-  }
-  li {
-    display: flex;
-  }
 </style>
